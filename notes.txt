@@ -1,0 +1,10 @@
+
+* following experience with mb java, and looking at test vectors from mb-mmd rng schema, search results don't include track sets.  presumably a release lookup would.
+
+* the lack of mb documentation and character of mb documentation, combined with the character of java code, marks the benefits available from a client side development of the service and its use
+
+* a simple as possible client employs traditional dom programming and is open to manipulation before the request, and the exploration of request/response programming
+
+** the code base lays out request possibilities and programming conveniences
+** the result covers the service interfaces
+

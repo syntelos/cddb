@@ -1,0 +1,22 @@
+#
+# search interface <entity>=<parameters>
+#
+# query substring
+#                /ws/2/<entity>?query=<parameter>:<value>
+#                /ws/2/<entity>?query=<p1>:<v1>+AND+<p2>:<v2>
+#                /ws/2/<entity>?query=%22string%22%20AND%20<p>:<v>
+#
+# common parameters {type,query,limit,offset}
+#
+annotation=text,name,entity
+area=aid,alias,area,begin,comment,end,ended,sortname,iso,iso1,iso2,iso3
+artist=area,beginarea,endarea,arid,artist,artistaccent,alias,begin,comment,country,end,ended,gender,ipi,sortname,tag
+cdstubs=artist,title,barcode,comment,tracks,discid
+freedb=artist,title,discid,cat,year,tracks
+label=alia,area,begin,code,comment,country,end,ended,ipi,label,labelaccent,laid,sortname,tag
+place=pid,address,alias,area,begin,comment,end,ended,lat,long
+recording=arid,artist,artistname,creditname,comment,country,date,dur,format,isrc,number,position,primarytype,puid,qdur,recording,recordingaccent,reid,release,rgid,rid,secondarytype,status,tid,tnum,tracks,tracksrelease,tag,video
+release=arid,artist,artistname,comment,creditname,primarytype,rgid,releasegroup,releasegroupaccent,releases,release,reid,secondarytype,status,tag
+release-group=arid,artist,artistname,asin,barcode,catno,comment,country,creditname,date,discids,discidsmedium,format,laid,label,lang,mediums,primarytype,puid,quality,reid,release,releaseaccent,rgid,script,secondarytype,status,tag,tracks,tracksmedium
+tag=tag
+work=alias,arid,artist,comment,iswc,lang,tag,wid,work,workaccent
