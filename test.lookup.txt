@@ -1,0 +1,43 @@
+Artist: Diana Krall
+Album: All for you
+http://musicbrainz.org/ws/2/release?query=%22All+for+you%22+AND+artist%3A%22Diana+Krall%22&offset=0&limit=100
+
+928cf314-07eb-4149-90ed-30640f61768b US CD
+http://musicbrainz.org/ws/2/release/928cf314-07eb-4149-90ed-30640f61768b?offset=0&limit=100
+
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://musicbrainz.org/ns/mmd-2.0#">
+    <release id="928cf314-07eb-4149-90ed-30640f61768b">
+        <title>All for You: A Dedication to the Nat King Cole Trio</title>
+        <status>Official</status>
+        <quality>normal</quality>
+        <packaging>Digipak</packaging>
+        <text-representation>
+            <language>eng</language>
+            <script>Latn</script>
+        </text-representation>
+        <date>1996-03-12</date>
+        <country>US</country>
+        <release-event-list count="1">
+            <release-event>
+                <date>1996-03-12</date>
+                <area id="489ce91b-6658-3307-9877-795b68554c98">
+                    <name>United States</name>
+                    <sort-name>United States</sort-name>
+                    <iso-3166-1-code-list>
+                        <iso-3166-1-code>US</iso-3166-1-code>
+                    </iso-3166-1-code-list>
+                </area>
+            </release-event>
+        </release-event-list>
+        <barcode>011105018227</barcode>
+        <asin>B000003N89</asin>
+        <cover-art-archive>
+            <artwork>false</artwork>
+            <count>0</count>
+            <front>false</front>
+            <back>false</back>
+        </cover-art-archive>
+    </release>
+</metadata>
+

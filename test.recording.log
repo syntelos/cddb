@@ -1,0 +1,10 @@
+Artist: Diana Krall
+Album: All for you
+http://musicbrainz.org/ws/2/recording?query=%22All+for+you%22+AND+artist%3A%22Diana+Krall%22+AND+country%3AUS+AND+format%3ACD&offset=0&limit=100
+
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata created="2015-07-18T16:49:18.788Z"
+    xmlns="http://musicbrainz.org/ns/mmd-2.0#" xmlns:ext="http://musicbrainz.org/ns/ext#-2.0">
+    <recording-list count="0" offset="0"/>
+</metadata>
+

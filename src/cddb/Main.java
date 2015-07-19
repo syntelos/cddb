@@ -14,19 +14,21 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import java.nio.file.Path;
+import java.nio.file.Files;
 
 import java.util.List;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.DOMConfiguration;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * 
  */
 public class Main {
+    private final static PrintStream out = System.out;
+    private final static PrintStream err = System.err;
+
     private static void usage(){
 	System.err.println("Synopsis");
 	System.err.println();
@@ -59,9 +61,6 @@ public class Main {
      * 
      */
     public static void main(String[] argv){
-
-	final PrintStream out = System.out;
-
 	if (0 < argv.length){
 
 	    final File dir = new File(argv[0]).getAbsoluteFile();
@@ -76,52 +75,105 @@ public class Main {
 
 		    final String artist = info[0];
 		    final String album = info[1];
-		    out.printf("Artist: %s%n",artist);
-		    out.printf("Album: %s%n",album);
+		    out.printf("# %s/%s%n",artist,album);
 
+		    final API api_release = new API(Entity.RELEASE);
+
+		    Document response = null;
 		    try {
-			API release = new API(Entity.RELEASE);
+			/*
+			 * Search for 'reid'
+			 */
+			String query = String.format("\"%s\" AND artist:\"%s\" AND country:US AND format:CD",album,artist);
 
-			String query = String.format("\"%s\" AND artist:\"%s\"",album,artist);
+			response = api_release.search(query);
 
-			Document response = release.search(query);
+			Element metadata = response.getDocumentElement();
 
-			String uri = response.getDocumentURI();
+			if (null != metadata){
 
-			System.out.println(uri);
-			System.out.println();
+			    Element release_list = (Element)metadata.getFirstChild();
 
-			DOMImplementationLS ls = (DOMImplementationLS)response.getImplementation();
+			    if (null != release_list){
 
-			LSOutput ls_out = ls.createLSOutput();
-			ls_out.setByteStream(System.out);
-			ls_out.setSystemId("system:out");
-			ls_out.setEncoding("UTF-8");
+				Element el_release = (Element)release_list.getChildNodes().item(0);
 
-			LSSerializer ls_ser = ls.createLSSerializer();
-			{
-			    DOMConfiguration ls_ser_config = ls_ser.getDomConfig();
+				if (null != el_release){
 
-			    ls_ser_config.setParameter("format-pretty-print",true);
+				    String release_id = el_release.getAttribute("id");
+				    /*
+				     * lookup release for list of track data (via
+				     * 'inc recordings')
+				     */
+				    response = api_release.lookup(release_id,"recordings");
+
+				    NodeList tracks_list = response.getElementsByTagName("track");
+				    {
+					int cc = 0;
+					int count = tracks_list.getLength();
+					for (cc = 0; cc < count; cc++){
+					    Element track = (Element)tracks_list.item(cc);
+
+					    int position = Integer.parseInt(track.getElementsByTagName("position").item(0).getTextContent());
+					    int number = Integer.parseInt(track.getElementsByTagName("number").item(0).getTextContent());
+					    String title = track.getElementsByTagName("title").item(0).getTextContent();
+
+					    //out.printf("%d %d %s%n",position,number,title);
+					    File source_file = new File(dir,String.format("Track %d.wav",position));
+					    if (source_file.isFile()){
+
+						Path source = source_file.toPath();
+
+						Path target = new File(dir,String.format("%d %s.wav",number,title)).toPath();
+
+						Files.move(source,target);
+
+						out.printf("M '%s' '%s'%n",source,target);
+					    }
+					    else {
+						err.printf("Error, file not found '%s'%n",source_file.toPath());
+
+						System.exit(1);
+					    }
+					}
+				    }
+				}
+				else {
+				    err.println("Error, search prooduced no results (count 'release-list' zero).");
+
+				    System.exit(1);
+				}
+			    }
+			    else {
+				err.println("Error, missing 'release-list' under 'metadata'.");
+				err.println();
+				api_release.prettyPrint(response,err);
+				err.println();
+				System.exit(1);
+			    }
 			}
-			ls_ser.write(response,ls_out);
-
-			System.out.println();
-
 			System.exit(0);
 		    }
 		    catch (Exception any){
 			any.printStackTrace();
+			if (null != response){
+
+			    err.printf("Request: ",response.getUserData(API.DOM_HTTP_REQUEST));
+			    err.printf("Response: ",response.getUserData(API.DOM_HTTP_STATUS));
+			    err.println();
+			    api_release.prettyPrint(response,err);
+			    err.println();
+			}
 			System.exit(1);
 		    }
 		}
 		else {
-		    System.err.printf("Unable to determine artist/album from '%s'.%n",dir.getPath());
+		    err.printf("Unable to determine artist/album from '%s'.%n",dir.getPath());
 		    System.exit(1);
 		}
 	    }
 	    else {
-		System.err.printf("Directory not found '%s'.%n",dir.getPath());
+		err.printf("Directory not found '%s'.%n",dir.getPath());
 		System.exit(1);
 	    }
 	}
