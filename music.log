@@ -1,0 +1,30 @@
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/Alphaville/First Harvest 1984 - 92" 
+# Alphaville/First Harvest 1984 - 92
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/Amy Winehouse/Frank" 
+# Amy Winehouse/Frank
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/Dave Wendelin/Deep in the Moonlight" 
+# Dave Wendelin/Deep in the Moonlight
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/Diana Krall/All for you" 
+# Diana Krall/All for you
+M '/home/jdp/Music/Diana Krall/All for you/1 I'm an Errand Girl for Rhythm.wav' '/home/jdp/Music/Diana Krall/All for you/01._I'm an Errand Girl for Rhythm.wav'
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/Diana Krall/Only trust your heart" 
+# Diana Krall/Only trust your heart
+M '/home/jdp/Music/Diana Krall/Only trust your heart/1 Is You Is or Is You Ain't My Baby.wav' '/home/jdp/Music/Diana Krall/Only trust your heart/01._Is You Is or Is You Ain't My Baby.wav'
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/Diana Krall/stepping out" 
+# Diana Krall/stepping out
+M '/home/jdp/Music/Diana Krall/stepping out/1 This Can't Be Love.wav' '/home/jdp/Music/Diana Krall/stepping out/01._This Can't Be Love.wav'
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/Diana Krall/The girl in the other room" 
+# Diana Krall/The girl in the other room
+M '/home/jdp/Music/Diana Krall/The girl in the other room/1 Stop This World.wav' '/home/jdp/Music/Diana Krall/The girl in the other room/01._Stop This World.wav'
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/Diana Krall/When I look in your eyes" 
+# Diana Krall/When I look in your eyes
+M '/home/jdp/Music/Diana Krall/When I look in your eyes/1 Let's Face the Music and Dance.wav' '/home/jdp/Music/Diana Krall/When I look in your eyes/01._Let's Face the Music and Dance.wav'
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/Soft Cell/The Singles" 
+# Soft Cell/The Singles
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/The Kat Club!/House Combinations" 
+# The Kat Club!/House Combinations
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/YELLO/baby" 
+# YELLO/baby
+# 2>&1 java -jar cddb.jar "/home/jdp/Music/ZZ Top/Greatest Hits" 
+# ZZ Top/Greatest Hits
+M '/home/jdp/Music/ZZ Top/Greatest Hits/1 Gimme All Your Lovin'.wav' '/home/jdp/Music/ZZ Top/Greatest Hits/01._Gimme All Your Lovin'.wav'

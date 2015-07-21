@@ -22,10 +22,25 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.FieldDataInvalidException;
+import org.jaudiotagger.tag.TagException;
+
 /**
  * 
  */
 public class Main {
+    private final static String FilenameFormat_In = "Track %d.wav";
+    private final static String FilenameFormat = "%02d._%s.wav";
+    private final static String FilenameFormat_Old = "%d %s.wav";
+
     private final static PrintStream out = System.out;
     private final static PrintStream err = System.err;
 
@@ -118,34 +133,76 @@ public class Main {
 					    int number = Integer.parseInt(track.getElementsByTagName("number").item(0).getTextContent());
 					    String title = track.getElementsByTagName("title").item(0).getTextContent();
 
-					    //out.printf("%d %d %s%n",position,number,title);
-					    File source_file = new File(dir,String.format("Track %d.wav",position));
+					    /*
+					     */
+					    File source_file = new File(dir,String.format(FilenameFormat_In,position));
 					    if (source_file.isFile()){
 
 						Path source = source_file.toPath();
 
-						Path target = new File(dir,String.format("%d %s.wav",number,title)).toPath();
+						File target_file = new File(dir,String.format(FilenameFormat,number,title));
+
+						Path target = target_file.toPath();
 
 						Files.move(source,target);
 
 						out.printf("M '%s' '%s'%n",source,target);
+
+						Tag(target_file,artist,album,release_id,position,number,title);
 					    }
 					    else {
-						err.printf("Error, file not found '%s'%n",source_file.toPath());
+						source_file = new File(dir,String.format(FilenameFormat_Old,number,title));
+						if (source_file.isFile()){
 
-						System.exit(1);
+						    Path source = source_file.toPath();
+
+						    File target_file = new File(dir,String.format(FilenameFormat,number,title));
+
+						    Path target = target_file.toPath();
+
+						    Files.move(source,target);
+
+						    out.printf("M '%s' '%s'%n",source,target);
+
+						    Tag(target_file,artist,album,release_id,position,number,title);
+						}
+						else {
+						    source_file = new File(dir,String.format(FilenameFormat,number,title));
+
+						    if (source_file.isFile()){
+
+							Tag(source_file,artist,album,release_id,position,number,title);
+
+							out.printf("U '%s'%n",source_file.toPath());
+						    }
+						    else {
+
+							err.printf("Error, file not found '%s'%n",source_file.toPath());
+
+							System.exit(1);
+						    }
+						}
 					    }
 					}
 				    }
 				}
 				else {
 				    err.println("Error, search prooduced no results (count 'release-list' zero).");
+				    err.println();
+				    err.printf("Request: ",response.getUserData(API.DOM_HTTP_REQUEST));
+				    err.printf("Response: ",response.getUserData(API.DOM_HTTP_STATUS));
+				    err.println();
+				    api_release.prettyPrint(response,err);
+				    err.println();
 
 				    System.exit(1);
 				}
 			    }
 			    else {
 				err.println("Error, missing 'release-list' under 'metadata'.");
+				err.println();
+				err.printf("Request: ",response.getUserData(API.DOM_HTTP_REQUEST));
+				err.printf("Response: ",response.getUserData(API.DOM_HTTP_STATUS));
 				err.println();
 				api_release.prettyPrint(response,err);
 				err.println();
@@ -181,5 +238,17 @@ public class Main {
 	    usage();
 	    System.exit(1);
 	}
+    }
+    private final static void Tag(File file, String artist, String album, String reid, int pos, int num, String title)
+	throws CannotReadException, TagException, ReadOnlyFileException, InvalidAudioFrameException, IOException, FieldDataInvalidException, CannotWriteException
+    {
+	AudioFile f = AudioFileIO.read(file);
+	Tag tag = f.getTag();
+	tag.setField(FieldKey.ARTIST,artist);
+	tag.setField(FieldKey.ALBUM,album);
+	tag.setField(FieldKey.MUSICBRAINZ_RELEASEID,reid);
+	tag.setField(FieldKey.TRACK,Integer.toString(num));
+	tag.setField(FieldKey.TITLE,title);
+	f.commit();
     }
 }
