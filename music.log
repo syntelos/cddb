@@ -1,30 +1,60 @@
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/Alphaville/First Harvest 1984 - 92" 
-# Alphaville/First Harvest 1984 - 92
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/Amy Winehouse/Frank" 
-# Amy Winehouse/Frank
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/Dave Wendelin/Deep in the Moonlight" 
-# Dave Wendelin/Deep in the Moonlight
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/Diana Krall/All for you" 
-# Diana Krall/All for you
-M '/home/jdp/Music/Diana Krall/All for you/1 I'm an Errand Girl for Rhythm.wav' '/home/jdp/Music/Diana Krall/All for you/01._I'm an Errand Girl for Rhythm.wav'
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/Diana Krall/Only trust your heart" 
-# Diana Krall/Only trust your heart
-M '/home/jdp/Music/Diana Krall/Only trust your heart/1 Is You Is or Is You Ain't My Baby.wav' '/home/jdp/Music/Diana Krall/Only trust your heart/01._Is You Is or Is You Ain't My Baby.wav'
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/Diana Krall/stepping out" 
 # Diana Krall/stepping out
-M '/home/jdp/Music/Diana Krall/stepping out/1 This Can't Be Love.wav' '/home/jdp/Music/Diana Krall/stepping out/01._This Can't Be Love.wav'
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/Diana Krall/The girl in the other room" 
-# Diana Krall/The girl in the other room
-M '/home/jdp/Music/Diana Krall/The girl in the other room/1 Stop This World.wav' '/home/jdp/Music/Diana Krall/The girl in the other room/01._Stop This World.wav'
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/Diana Krall/When I look in your eyes" 
-# Diana Krall/When I look in your eyes
-M '/home/jdp/Music/Diana Krall/When I look in your eyes/1 Let's Face the Music and Dance.wav' '/home/jdp/Music/Diana Krall/When I look in your eyes/01._Let's Face the Music and Dance.wav'
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/Soft Cell/The Singles" 
-# Soft Cell/The Singles
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/The Kat Club!/House Combinations" 
-# The Kat Club!/House Combinations
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/YELLO/baby" 
-# YELLO/baby
-# 2>&1 java -jar cddb.jar "/home/jdp/Music/ZZ Top/Greatest Hits" 
-# ZZ Top/Greatest Hits
-M '/home/jdp/Music/ZZ Top/Greatest Hits/1 Gimme All Your Lovin'.wav' '/home/jdp/Music/ZZ Top/Greatest Hits/01._Gimme All Your Lovin'.wav'
+
+<?xml version="1.0" encoding="UTF-8"?>
+<release xmlns="http://musicbrainz.org/ns/mmd-2.0#"
+    xmlns:ext="http://musicbrainz.org/ns/ext#-2.0" ext:score="100" id="590b5ccc-1284-461a-bf0a-b6628d95a4f0">
+    <title>Stepping Out</title>
+    <status>Official</status>
+    <packaging>Jewel Case</packaging>
+    <text-representation>
+        <language>eng</language>
+        <script>Latn</script>
+    </text-representation>
+    <artist-credit>
+        <name-credit>
+            <artist id="67d2cb7a-9ddb-4a7f-82bf-5a2d1a038e98">
+                <name>Diana Krall</name>
+                <sort-name>Krall, Diana</sort-name>
+                <alias-list>
+                    <alias sort-name="Dianna Krall">Dianna Krall</alias>
+                    <alias sort-name="KRALL, Diana">KRALL, Diana</alias>
+                </alias-list>
+            </artist>
+        </name-credit>
+    </artist-credit>
+    <release-group id="4819899d-a075-34e1-94c7-01f34a0bc046" type="Album">
+        <primary-type>Album</primary-type>
+    </release-group>
+    <barcode>063757804222</barcode>
+    <label-info-list>
+        <label-info>
+            <catalog-number>ENJ-80422</catalog-number>
+            <label id="dfd22708-6b64-40ee-afaa-8b9edc7b2847">
+                <name>enja</name>
+            </label>
+        </label-info>
+    </label-info-list>
+    <medium-list count="1">
+        <track-count>12</track-count>
+        <medium>
+            <format>CD</format>
+            <disc-list count="1"/>
+            <track-list count="12"/>
+        </medium>
+    </medium-list>
+</release>
+
+	Accept (Diana Krall: stepping out)? [Yn]
+
+Exception in thread "main" java.lang.NoClassDefFoundError: org/jaudiotagger/audio/AudioFileIO
+	at cddb.Main.Tag(Main.java:254)
+	at cddb.Main.main(Main.java:193)
+Caused by: java.lang.ClassNotFoundException: org.jaudiotagger.audio.AudioFileIO
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:366)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:355)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:354)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:425)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:308)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:358)
+	... 2 more

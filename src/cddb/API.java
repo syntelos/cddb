@@ -19,6 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
@@ -211,7 +212,8 @@ public class API extends Object {
 	    connection.disconnect();
 	}
     }
-    public void prettyPrint(Document doc){
+    public void prettyPrint(Node node){
+	Document doc = (node instanceof Document)?((Document)node):(node.getOwnerDocument());
 	DOMImplementationLS ls = (DOMImplementationLS)doc.getImplementation();
 
 	LSOutput ls_out = ls.createLSOutput();
@@ -227,9 +229,10 @@ public class API extends Object {
 
 	    ls_ser_config.setParameter("format-pretty-print",true);
 	}
-	ls_ser.write(doc,ls_out);
+	ls_ser.write(node,ls_out);
     }
-    public void prettyPrint(Document doc, OutputStream out){
+    public void prettyPrint(Node node, OutputStream out){
+	Document doc = (node instanceof Document)?((Document)node):(node.getOwnerDocument());
 	DOMImplementationLS ls = (DOMImplementationLS)doc.getImplementation();
 
 	LSOutput ls_out = ls.createLSOutput();
@@ -244,6 +247,6 @@ public class API extends Object {
 
 	    ls_ser_config.setParameter("format-pretty-print",true);
 	}
-	ls_ser.write(doc,ls_out);
+	ls_ser.write(node,ls_out);
     }
 }

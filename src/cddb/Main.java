@@ -43,11 +43,12 @@ public class Main {
 
     private final static PrintStream out = System.out;
     private final static PrintStream err = System.err;
+    private final static InputStream in = System.in;
 
     private static void usage(){
 	System.err.println("Synopsis");
 	System.err.println();
-	System.err.println("    cddb.Main <dir>");
+	System.err.println("    cddb.Main <dir> [--print]");
 	System.err.println();
 	System.err.println("Description");
 	System.err.println();
@@ -80,6 +81,8 @@ public class Main {
 
 	    final File dir = new File(argv[0]).getAbsoluteFile();
 
+	    final boolean print = (1 < argv.length && "--print".equals(argv[1]));
+
 	    if (dir.isDirectory()){
 
 		final int dir_count = dir.listFiles().length;
@@ -90,7 +93,6 @@ public class Main {
 
 		    final String artist = info[0];
 		    final String album = info[1];
-		    out.printf("# %s/%s%n",artist,album);
 
 		    final API api_release = new API(Entity.RELEASE);
 
@@ -99,59 +101,61 @@ public class Main {
 			/*
 			 * Search for 'reid'
 			 */
-			String query = String.format("\"%s\" AND artist:\"%s\" AND country:US AND format:CD",album,artist);
+			String query = String.format("\"%s\" AND artist:\"%s\" AND format:CD",album,artist);
 
 			response = api_release.search(query);
 
 			Element metadata = response.getDocumentElement();
 
-			if (null != metadata){
+			if (print){
+			    out.printf("Request: %s%n",response.getUserData(API.DOM_HTTP_REQUEST));
+			    out.printf("Response: %s%n",response.getUserData(API.DOM_HTTP_STATUS));
+			    out.println();
+			    api_release.prettyPrint(response,out);
+			    out.println();
+			    System.exit(0);
+			}
+			else if (null != metadata){
 
-			    Element release_list = (Element)metadata.getFirstChild();
+			    err.printf("# %s/%s%n",artist,album);
 
-			    if (null != release_list){
+			    NodeList release_list = metadata.getFirstChild().getChildNodes();
 
-				Element el_release = (Element)release_list.getChildNodes().item(0);
+			    int release_list_count = release_list.getLength();
+			    int release_list_last = (release_list_count-1);
 
-				if (null != el_release){
+			    if (0 < release_list_count){
+				_release_loop:
+				for (int release_list_ix = 0; release_list_ix < release_list_count; release_list_ix++){
 
-				    String release_id = el_release.getAttribute("id");
+				    Element el_release = (Element)release_list.item(release_list_ix);
 				    /*
-				     * lookup release for list of track data (via
-				     * 'inc recordings')
+				     * don't auto-select when there's multiple possibilities
 				     */
-				    response = api_release.lookup(release_id,"recordings");
+				    if (1 == release_list_count || Accept(artist,album,api_release,el_release)){
 
-				    NodeList tracks_list = response.getElementsByTagName("track");
-				    {
-					int cc = 0;
-					int count = tracks_list.getLength();
-					for (cc = 0; cc < count; cc++){
-					    Element track = (Element)tracks_list.item(cc);
+					String release_id = el_release.getAttribute("id");
+					/*
+					 * lookup release for list of track data (via
+					 * 'inc recordings')
+					 */
+					response = api_release.lookup(release_id,"recordings");
 
-					    int position = Integer.parseInt(track.getElementsByTagName("position").item(0).getTextContent());
-					    int number = Integer.parseInt(track.getElementsByTagName("number").item(0).getTextContent());
-					    String title = track.getElementsByTagName("title").item(0).getTextContent();
+					NodeList tracks_list = response.getElementsByTagName("track");
+					{
+					    int cc = 0;
+					    int count = tracks_list.getLength();
+					    _tracks_loop:
+					    for (cc = 0; cc < count; cc++){
+						Element track = (Element)tracks_list.item(cc);
 
-					    /*
-					     */
-					    File source_file = new File(dir,String.format(FilenameFormat_In,position));
-					    if (source_file.isFile()){
+						int position = Integer.parseInt(track.getElementsByTagName("position").item(0).getTextContent());
+						int number = Integer.parseInt(track.getElementsByTagName("number").item(0).getTextContent());
+						String title = track.getElementsByTagName("title").item(0).getTextContent();
 
-						Path source = source_file.toPath();
-
-						File target_file = new File(dir,String.format(FilenameFormat,number,title));
-
-						Path target = target_file.toPath();
-
-						Files.move(source,target);
-
-						out.printf("M '%s' '%s'%n",source,target);
-
-						Tag(target_file,artist,album,release_id,position,number,title);
-					    }
-					    else {
-						source_file = new File(dir,String.format(FilenameFormat_Old,number,title));
+						/*
+						 */
+						File source_file = new File(dir,String.format(FilenameFormat_In,position));
 						if (source_file.isFile()){
 
 						    Path source = source_file.toPath();
@@ -162,47 +166,54 @@ public class Main {
 
 						    Files.move(source,target);
 
-						    out.printf("M '%s' '%s'%n",source,target);
+						    err.printf("M '%s' '%s'%n",source,target);
 
-						    Tag(target_file,artist,album,release_id,position,number,title);
+						    Tag(target_file,artist,album,position,number,title);
 						}
 						else {
-						    source_file = new File(dir,String.format(FilenameFormat,number,title));
-
+						    source_file = new File(dir,String.format(FilenameFormat_Old,number,title));
 						    if (source_file.isFile()){
 
-							Tag(source_file,artist,album,release_id,position,number,title);
+							Path source = source_file.toPath();
 
-							out.printf("U '%s'%n",source_file.toPath());
+							File target_file = new File(dir,String.format(FilenameFormat,number,title));
+
+							Path target = target_file.toPath();
+
+							Files.move(source,target);
+
+							err.printf("M '%s' '%s'%n",source,target);
+
+							Tag(target_file,artist,album,position,number,title);
 						    }
 						    else {
+							source_file = new File(dir,String.format(FilenameFormat,number,title));
 
-							err.printf("Error, file not found '%s'%n",source_file.toPath());
+							if (source_file.isFile()){
 
-							System.exit(1);
+							    Tag(source_file,artist,album,position,number,title);
+
+							    err.printf("U '%s'%n",source_file.toPath());
+							}
+							else {
+
+							    err.printf("Error, file not found '%s'%n",source_file.toPath());
+
+							    System.exit(1);
+							}
 						    }
 						}
 					    }
 					}
+					break _release_loop;
 				    }
-				}
-				else {
-				    err.println("Error, search prooduced no results (count 'release-list' zero).");
-				    err.println();
-				    err.printf("Request: ",response.getUserData(API.DOM_HTTP_REQUEST));
-				    err.printf("Response: ",response.getUserData(API.DOM_HTTP_STATUS));
-				    err.println();
-				    api_release.prettyPrint(response,err);
-				    err.println();
-
-				    System.exit(1);
 				}
 			    }
 			    else {
-				err.println("Error, missing 'release-list' under 'metadata'.");
+				err.printf("Error, 'release-list' count %d.%n",release_list.getLength());
 				err.println();
-				err.printf("Request: ",response.getUserData(API.DOM_HTTP_REQUEST));
-				err.printf("Response: ",response.getUserData(API.DOM_HTTP_STATUS));
+				err.printf("Request: %s%n",response.getUserData(API.DOM_HTTP_REQUEST));
+				err.printf("Response: %s%n",response.getUserData(API.DOM_HTTP_STATUS));
 				err.println();
 				api_release.prettyPrint(response,err);
 				err.println();
@@ -215,8 +226,8 @@ public class Main {
 			any.printStackTrace();
 			if (null != response){
 
-			    err.printf("Request: ",response.getUserData(API.DOM_HTTP_REQUEST));
-			    err.printf("Response: ",response.getUserData(API.DOM_HTTP_STATUS));
+			    err.printf("Request: %s%n",response.getUserData(API.DOM_HTTP_REQUEST));
+			    err.printf("Response: %s%n",response.getUserData(API.DOM_HTTP_STATUS));
 			    err.println();
 			    api_release.prettyPrint(response,err);
 			    err.println();
@@ -230,7 +241,7 @@ public class Main {
 		}
 	    }
 	    else {
-		err.printf("Directory not found '%s'.%n",dir.getPath());
+		usage();
 		System.exit(1);
 	    }
 	}
@@ -239,16 +250,56 @@ public class Main {
 	    System.exit(1);
 	}
     }
-    private final static void Tag(File file, String artist, String album, String reid, int pos, int num, String title)
+    private final static void Tag(File file, String artist, String album, int pos, int num, String title)
 	throws CannotReadException, TagException, ReadOnlyFileException, InvalidAudioFrameException, IOException, FieldDataInvalidException, CannotWriteException
     {
 	AudioFile f = AudioFileIO.read(file);
 	Tag tag = f.getTag();
-	tag.setField(FieldKey.ARTIST,artist);
-	tag.setField(FieldKey.ALBUM,album);
-	tag.setField(FieldKey.MUSICBRAINZ_RELEASEID,reid);
-	tag.setField(FieldKey.TRACK,Integer.toString(num));
-	tag.setField(FieldKey.TITLE,title);
-	f.commit();
+
+	if (tag.hasField(FieldKey.ARTIST) && tag.hasField(FieldKey.ALBUM) && tag.hasField(FieldKey.TRACK) && tag.hasField(FieldKey.TITLE)){
+
+	    return;
+	}
+	else {
+	    tag.setField(FieldKey.ARTIST,artist);
+	    tag.setField(FieldKey.ALBUM,album);
+	    tag.setField(FieldKey.TRACK,Integer.toString(num));
+	    tag.setField(FieldKey.TITLE,title);
+	    f.commit();
+	}
+    }
+    private final static boolean Accept(String artist, String album, API api, Element release)
+	throws IOException
+    {
+	try {
+	    String country = release.getElementsByTagName("country").item(0).getTextContent();
+
+	    out.println();
+	    api.prettyPrint(release,out);
+	    out.printf("\n\tAccept (%s: %s [%s])? [Yn]%n",artist,album,country);
+	}
+	catch (Exception exc){
+	    out.println();
+	    api.prettyPrint(release,out);
+	    out.printf("\n\tAccept (%s: %s)? [Yn]%n",artist,album);
+	}
+	out.flush();
+	switch(in.read()){
+	case '\r':
+	case '\n':
+	case 'y':
+	case 'Y':
+	    while (0 < in.available()){
+		in.read();
+	    }
+	    out.println();
+	    return true;
+	default:
+	    while (0 < in.available()){
+		in.read();
+	    }
+	    out.println();
+	    return false;
+	}
     }
 }
