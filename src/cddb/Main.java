@@ -48,12 +48,18 @@ public class Main {
     private static void usage(){
 	System.err.println("Synopsis");
 	System.err.println();
-	System.err.println("    cddb.Main <dir> [--print]");
+	System.err.println("    cddb.Main <dir> [--print | --tag]");
 	System.err.println();
 	System.err.println("Description");
 	System.err.println();
 	System.err.println("    Check and repair track file names for Artist/Album directory.");
 	System.err.println();
+	System.err.println("    With 'print' option, don't modify files.");
+	System.err.println();
+	System.err.println("    With 'print' and 'tag' options, list ID3 tags for files found");
+	System.err.println("    in directory.");
+	System.err.println();
+	System.exit(1);
     }
     private static String[] ArtistAlbum(File dir){
 
@@ -79,11 +85,49 @@ public class Main {
     public static void main(String[] argv){
 	if (0 < argv.length){
 
-	    final File dir = new File(argv[0]).getAbsoluteFile();
+	    File dir = null;
 
-	    final boolean print = (1 < argv.length && "--print".equals(argv[1]));
+	    boolean print = false, tag = false;
 
-	    if (dir.isDirectory()){
+	    /*
+	     */
+	    for (int argc = argv.length, argx = 0; argx < argc; argx++){
+		String arg = argv[0];
+		if ('-' == arg.charAt(0)){
+		    if (arg.endsWith("-print")){
+			print = (!print);
+		    }
+		    else if (arg.endsWith("-tag")){
+			tag = (!tag);
+		    }
+		    else {
+			usage();
+		    }
+		}
+		else {
+		    dir = new File(arg).getAbsoluteFile();		    
+		}
+	    }
+
+	    /*
+	     */
+	    if (null == dir){
+		usage();
+	    }
+	    else if (print && tag){
+		try {
+		    for (File file : dir.listFiles()){
+
+			PrintTag(file);
+		    }
+		    System.exit(0);
+		}
+		catch (Exception exc){
+		    exc.printStackTrace();
+		    System.exit(1);
+		}
+	    }
+	    else if (dir.isDirectory()){
 
 		final int dir_count = dir.listFiles().length;
 
@@ -122,92 +166,9 @@ public class Main {
 			    NodeList release_list = metadata.getFirstChild().getChildNodes();
 
 			    int release_list_count = release_list.getLength();
-			    int release_list_last = (release_list_count-1);
 
 			    if (0 < release_list_count){
-				_release_loop:
-				for (int release_list_ix = 0; release_list_ix < release_list_count; release_list_ix++){
-
-				    Element el_release = (Element)release_list.item(release_list_ix);
-				    /*
-				     * don't auto-select when there's multiple possibilities
-				     */
-				    if (1 == release_list_count || Accept(artist,album,api_release,el_release)){
-
-					String release_id = el_release.getAttribute("id");
-					/*
-					 * lookup release for list of track data (via
-					 * 'inc recordings')
-					 */
-					response = api_release.lookup(release_id,"recordings");
-
-					NodeList tracks_list = response.getElementsByTagName("track");
-					{
-					    int cc = 0;
-					    int count = tracks_list.getLength();
-					    _tracks_loop:
-					    for (cc = 0; cc < count; cc++){
-						Element track = (Element)tracks_list.item(cc);
-
-						int position = Integer.parseInt(track.getElementsByTagName("position").item(0).getTextContent());
-						int number = Integer.parseInt(track.getElementsByTagName("number").item(0).getTextContent());
-						String title = track.getElementsByTagName("title").item(0).getTextContent();
-
-						/*
-						 */
-						File source_file = new File(dir,String.format(FilenameFormat_In,position));
-						if (source_file.isFile()){
-
-						    Path source = source_file.toPath();
-
-						    File target_file = new File(dir,String.format(FilenameFormat,number,title));
-
-						    Path target = target_file.toPath();
-
-						    Files.move(source,target);
-
-						    err.printf("M '%s' '%s'%n",source,target);
-
-						    Tag(target_file,artist,album,position,number,title);
-						}
-						else {
-						    source_file = new File(dir,String.format(FilenameFormat_Old,number,title));
-						    if (source_file.isFile()){
-
-							Path source = source_file.toPath();
-
-							File target_file = new File(dir,String.format(FilenameFormat,number,title));
-
-							Path target = target_file.toPath();
-
-							Files.move(source,target);
-
-							err.printf("M '%s' '%s'%n",source,target);
-
-							Tag(target_file,artist,album,position,number,title);
-						    }
-						    else {
-							source_file = new File(dir,String.format(FilenameFormat,number,title));
-
-							if (source_file.isFile()){
-
-							    Tag(source_file,artist,album,position,number,title);
-
-							    err.printf("U '%s'%n",source_file.toPath());
-							}
-							else {
-
-							    err.printf("Error, file not found '%s'%n",source_file.toPath());
-
-							    System.exit(1);
-							}
-						    }
-						}
-					    }
-					}
-					break _release_loop;
-				    }
-				}
+				Update(dir,artist,album,api_release,response,release_list_count,release_list);
 			    }
 			    else {
 				err.printf("Error, 'release-list' count %d.%n",release_list.getLength());
@@ -242,15 +203,32 @@ public class Main {
 	    }
 	    else {
 		usage();
-		System.exit(1);
 	    }
 	}
 	else {
 	    usage();
-	    System.exit(1);
 	}
     }
-    private final static void Tag(File file, String artist, String album, int pos, int num, String title)
+    private final static void PrintTag(File file)
+	throws CannotReadException, TagException, ReadOnlyFileException, InvalidAudioFrameException, IOException, FieldDataInvalidException, CannotWriteException
+    {
+	AudioFile f = AudioFileIO.read(file);
+	Tag tag = f.getTag();
+
+	if (tag.hasField(FieldKey.ARTIST) && tag.hasField(FieldKey.ALBUM) && tag.hasField(FieldKey.TRACK) && tag.hasField(FieldKey.TITLE)){
+
+	    return;
+	}
+	else {
+	    String artist = tag.getAll(FieldKey.ARTIST).get(0);
+	    String album = tag.getAll(FieldKey.ALBUM).get(0);
+	    String track = tag.getAll(FieldKey.TRACK).get(0);
+	    String title = tag.getAll(FieldKey.TITLE).get(0);
+
+	    out.printf("%s \"%s\" \"%s\" \"%s\"%n",track,artist,album,title);
+	}
+    }
+    private final static void UpdateTag(File file, String artist, String album, int pos, int num, String title)
 	throws CannotReadException, TagException, ReadOnlyFileException, InvalidAudioFrameException, IOException, FieldDataInvalidException, CannotWriteException
     {
 	AudioFile f = AudioFileIO.read(file);
@@ -300,6 +278,96 @@ public class Main {
 	    }
 	    out.println();
 	    return false;
+	}
+    }
+    private final static void Update(File dir, String artist, String album,
+				     API api_release, Document response, 
+				     int release_list_count, NodeList release_list)
+	throws CannotReadException, TagException, ReadOnlyFileException, InvalidAudioFrameException, IOException, FieldDataInvalidException, CannotWriteException
+    {
+	int release_list_last = (release_list_count-1);
+	_release_loop:
+	for (int release_list_ix = 0; release_list_ix < release_list_count; release_list_ix++){
+
+	    Element el_release = (Element)release_list.item(release_list_ix);
+	    /*
+	     * don't auto-select when there's multiple possibilities
+	     */
+	    if (1 == release_list_count || Accept(artist,album,api_release,el_release)){
+
+		String release_id = el_release.getAttribute("id");
+		/*
+		 * lookup release for list of track data (via
+		 * 'inc recordings')
+		 */
+		response = api_release.lookup(release_id,"recordings");
+
+		NodeList tracks_list = response.getElementsByTagName("track");
+		{
+		    int cc = 0;
+		    int count = tracks_list.getLength();
+		    _tracks_loop:
+		    for (cc = 0; cc < count; cc++){
+			Element track = (Element)tracks_list.item(cc);
+
+			int position = Integer.parseInt(track.getElementsByTagName("position").item(0).getTextContent());
+			int number = Integer.parseInt(track.getElementsByTagName("number").item(0).getTextContent());
+			String title = track.getElementsByTagName("title").item(0).getTextContent();
+
+			/*
+			 */
+			File source_file = new File(dir,String.format(FilenameFormat_In,position));
+			if (source_file.isFile()){
+
+			    Path source = source_file.toPath();
+
+			    File target_file = new File(dir,String.format(FilenameFormat,number,title));
+
+			    Path target = target_file.toPath();
+
+			    Files.move(source,target);
+
+			    err.printf("M '%s' '%s'%n",source,target);
+
+			    UpdateTag(target_file,artist,album,position,number,title);
+			}
+			else {
+			    source_file = new File(dir,String.format(FilenameFormat_Old,number,title));
+			    if (source_file.isFile()){
+
+				Path source = source_file.toPath();
+
+				File target_file = new File(dir,String.format(FilenameFormat,number,title));
+
+				Path target = target_file.toPath();
+
+				Files.move(source,target);
+
+				err.printf("M '%s' '%s'%n",source,target);
+
+				UpdateTag(target_file,artist,album,position,number,title);
+			    }
+			    else {
+				source_file = new File(dir,String.format(FilenameFormat,number,title));
+
+				if (source_file.isFile()){
+
+				    UpdateTag(source_file,artist,album,position,number,title);
+
+				    err.printf("U '%s'%n",source_file.toPath());
+				}
+				else {
+
+				    err.printf("Error, file not found '%s'%n",source_file.toPath());
+
+				    System.exit(1);
+				}
+			    }
+			}
+		    }
+		}
+		break _release_loop;
+	    }
 	}
     }
 }
