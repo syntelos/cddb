@@ -56,6 +56,9 @@ public class Main {
 	System.err.println();
 	System.err.println("    With 'print' option, don't modify files.");
 	System.err.println();
+	System.err.println("    With 'tag' option, don't use [CDDB/Musicbrainz] web services.");
+	System.err.println("    (Employs artist, album and track directory and file name data).");
+	System.err.println();
 	System.err.println("    With 'print' and 'tag' options, list ID3 tags for files found");
 	System.err.println("    in directory.");
 	System.err.println();
@@ -144,13 +147,44 @@ public class Main {
 		    System.exit(1);
 		}
 	    }
+	    else if (tag && dir.isDirectory()){
+
+		fext = Fext(dir,fext);
+
+		final int dir_count = Count(dir,fext);
+
+		final String[] aa = ArtistAlbum(dir);
+
+		if (null != aa){
+
+		    final String artist = aa[0];
+		    final String album = aa[1];
+
+		    try {
+			for (File file : dir.listFiles(new FextFilter(fext))){
+
+			    UpdateTag(file,artist,album);
+			}
+
+			System.exit(0);
+		    }
+		    catch (Exception exc){
+			exc.printStackTrace();
+			System.exit(1);
+		    }
+		}
+		else {
+		    err.printf("Unable to determine artist/album from '%s'.%n",dir.getPath());
+		    System.exit(1);
+		}
+	    }
 	    else if (dir.isDirectory()){
 
 		fext = Fext(dir,fext);
 
 		final int dir_count = Count(dir,fext);
 
-		final String[] aa = ArtistAlbum(dir); //gaga+1//
+		final String[] aa = ArtistAlbum(dir);
 
 		if (null != aa){
 
@@ -190,13 +224,6 @@ public class Main {
 
 				Update(dir,fext,artist,album,api_release,response,release_list_count,release_list);
 			    }
-			    else if (tag){
-
-				for (File file : dir.listFiles(new FextFilter(fext))){
-
-				    UpdateTag(file,artist,album);
-				}
-			    }
 			    else {
 				err.printf("Error, 'release-list' count %d.%n",release_list.getLength());
 				err.println();
@@ -220,9 +247,13 @@ public class Main {
 			    err.printf("Request: %s%n",response.getUserData(API.DOM_HTTP_REQUEST));
 			    err.printf("Response: %s%n",response.getUserData(API.DOM_HTTP_STATUS));
 			    err.println();
+			    any.printStackTrace();
+			    System.exit(1);
 			}
-			any.printStackTrace();
-			System.exit(1);
+			else {
+			    any.printStackTrace();
+			    System.exit(1);
+			}
 		    }
 		}
 		else {
@@ -299,30 +330,33 @@ public class Main {
 	tag.setField(FieldKey.TITLE,title);
 	f.commit();
     }
+    private final static String[] SplitTag(String name){
+	String[] re = new String[2];
+	{
+	    int idx0 = name.indexOf('.');
+	    int idx1 = name.lastIndexOf('.');
+	    if (0 < idx0 && idx0 < idx1){
+		re[0] = name.substring(0,idx0).replace('.',' ').trim();
+		re[1] = name.substring(idx0+1,idx1).replace('_',' ').trim();
+		return re;
+	    }
+	    else {
+		throw new IllegalArgumentException(name);
+	    }
+	}
+    }
     private final static void UpdateTag(File file, String artist, String album)
 	throws CannotReadException, TagException, ReadOnlyFileException, InvalidAudioFrameException, IOException, FieldDataInvalidException, CannotWriteException
     {
 	String track = null, title = null;
 	{
 	    String name = file.getName();
-	    String[] pieces = name.split("\\.");
-	    if (null != pieces && 3 == pieces.length){
+	    String[] pieces = SplitTag(name);
+	    if (null != pieces){
 
-		{
-		    track = pieces[0];
-		    if ('.' == track.charAt(track.length()-1)){
+		track = pieces[0];
 
-			track = track.substring(0,track.length()-1);
-		    }
-		}
-
-		{
-		    title = pieces[1];
-		    if ('_' == title.charAt(0)){
-
-			title = title.substring(1);
-		    }
-		}
+		title = pieces[1];
 	    }
 	    else {
 		throw new IllegalStateException(name);
