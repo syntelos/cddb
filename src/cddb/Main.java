@@ -173,6 +173,7 @@ public class Main {
 			    int release_list_count = release_list.getLength();
 
 			    if (0 < release_list_count){
+
 				Update(dir,artist,album,api_release,response,release_list_count,release_list);
 			    }
 			    else {
@@ -275,17 +276,11 @@ public class Main {
 	AudioFile f = AudioFileIO.read(file);
 	Tag tag = f.getTag();
 
-	if (tag.hasField(FieldKey.ARTIST) && tag.hasField(FieldKey.ALBUM) && tag.hasField(FieldKey.TRACK) && tag.hasField(FieldKey.TITLE)){
-
-	    return;
-	}
-	else {
-	    tag.setField(FieldKey.ARTIST,artist);
-	    tag.setField(FieldKey.ALBUM,album);
-	    tag.setField(FieldKey.TRACK,Integer.toString(num));
-	    tag.setField(FieldKey.TITLE,title);
-	    f.commit();
-	}
+	tag.setField(FieldKey.ARTIST,artist);
+	tag.setField(FieldKey.ALBUM,album);
+	tag.setField(FieldKey.TRACK,Integer.toString(num));
+	tag.setField(FieldKey.TITLE,title);
+	f.commit();
     }
     private final static boolean Accept(String artist, String album, API api, Element release)
 	throws IOException
