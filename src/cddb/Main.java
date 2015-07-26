@@ -190,6 +190,13 @@ public class Main {
 
 				Update(dir,fext,artist,album,api_release,response,release_list_count,release_list);
 			    }
+			    else if (tag){
+
+				for (File file : dir.listFiles(new FextFilter(fext))){
+
+				    UpdateTag(file,artist,album);
+				}
+			    }
 			    else {
 				err.printf("Error, 'release-list' count %d.%n",release_list.getLength());
 				err.println();
@@ -291,6 +298,47 @@ public class Main {
 	tag.setField(FieldKey.TRACK,Integer.toString(num));
 	tag.setField(FieldKey.TITLE,title);
 	f.commit();
+    }
+    private final static void UpdateTag(File file, String artist, String album)
+	throws CannotReadException, TagException, ReadOnlyFileException, InvalidAudioFrameException, IOException, FieldDataInvalidException, CannotWriteException
+    {
+	String track = null, title = null;
+	{
+	    String name = file.getName();
+	    String[] pieces = name.split("\\.");
+	    if (null != pieces && 3 == pieces.length){
+
+		{
+		    track = pieces[0];
+		    if ('.' == track.charAt(track.length()-1)){
+
+			track = track.substring(0,track.length()-1);
+		    }
+		}
+
+		{
+		    title = pieces[1];
+		    if ('_' == title.charAt(0)){
+
+			title = title.substring(1);
+		    }
+		}
+	    }
+	    else {
+		throw new IllegalStateException(name);
+	    }
+	}
+
+	AudioFile f = AudioFileIO.read(file);
+	Tag tag = f.getTagOrCreateAndSetDefault();
+
+	tag.setField(FieldKey.ARTIST,artist);
+	tag.setField(FieldKey.ALBUM,album);
+	tag.setField(FieldKey.TRACK,track);
+	tag.setField(FieldKey.TITLE,title);
+	f.commit();
+
+	err.printf("U %s : %s : %s : %s : %s%n",file.toPath(),artist,album,track,title);
     }
     private final static boolean Accept(String artist, String album, API api, Element release)
 	throws IOException
@@ -458,5 +506,22 @@ public class Main {
 	    }
 	}
 	return count;
+    }
+
+    static class FextFilter
+	implements java.io.FilenameFilter 
+    {
+	final String fext, filter;
+
+	FextFilter(String fext){
+	    super();
+	    this.fext = fext;
+	    this.filter = ("."+fext);
+	}
+
+	public boolean accept(File dir, String name){
+
+	    return name.endsWith(this.filter);
+	}
     }
 }
