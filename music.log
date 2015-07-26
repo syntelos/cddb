@@ -1,1 +1,274 @@
-Tag data not found.
+# ZZ Top/Greatest Hits
+
+<?xml version="1.0" encoding="UTF-8"?>
+<release xmlns="http://musicbrainz.org/ns/mmd-2.0#"
+    xmlns:ext="http://musicbrainz.org/ns/ext#-2.0" ext:score="100" id="5b4ece29-4ff4-48eb-809e-456b2c9b035d">
+    <title>Greatest Hits</title>
+    <status>Official</status>
+    <packaging>Jewel Case</packaging>
+    <text-representation>
+        <language>eng</language>
+        <script>Latn</script>
+    </text-representation>
+    <artist-credit>
+        <name-credit>
+            <artist id="a81259a0-a2f5-464b-866e-71220f2739f1">
+                <name>ZZ Top</name>
+                <sort-name>ZZ Top</sort-name>
+                <alias-list>
+                    <alias sort-name="ZZTop">ZZTop</alias>
+                    <alias sort-name="Z Z Top">Z Z Top</alias>
+                </alias-list>
+            </artist>
+        </name-credit>
+    </artist-credit>
+    <release-group id="035e7ea1-96ac-3c21-bee5-3f0a4471298a" type="Compilation">
+        <primary-type>Album</primary-type>
+        <secondary-type-list>
+            <secondary-type>Compilation</secondary-type>
+        </secondary-type-list>
+    </release-group>
+    <date>1992</date>
+    <country>JP</country>
+    <release-event-list>
+        <release-event>
+            <date>1992</date>
+            <area id="2db42837-c832-3c27-b4a3-08198f75693c">
+                <name>Japan</name>
+                <sort-name>Japan</sort-name>
+                <iso-3166-1-code-list>
+                    <iso-3166-1-code>JP</iso-3166-1-code>
+                </iso-3166-1-code-list>
+            </area>
+        </release-event>
+    </release-event-list>
+    <barcode/>
+    <label-info-list>
+        <label-info>
+            <catalog-number>WPCP-4788</catalog-number>
+            <label id="32d88056-7c80-4b64-92ed-e298f35aceca">
+                <name>WEA International</name>
+            </label>
+        </label-info>
+    </label-info-list>
+    <medium-list count="1">
+        <track-count>18</track-count>
+        <medium>
+            <format>CD</format>
+            <disc-list count="1"/>
+            <track-list count="18"/>
+        </medium>
+    </medium-list>
+</release>
+
+	Accept (ZZ Top: Greatest Hits [JP])? [Yn]
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<release xmlns="http://musicbrainz.org/ns/mmd-2.0#"
+    xmlns:ext="http://musicbrainz.org/ns/ext#-2.0" ext:score="100" id="379c7c35-370c-3c9a-8600-8618f23972be">
+    <title>Greatest Hits</title>
+    <status>Official</status>
+    <text-representation>
+        <language>eng</language>
+        <script>Latn</script>
+    </text-representation>
+    <artist-credit>
+        <name-credit>
+            <artist id="a81259a0-a2f5-464b-866e-71220f2739f1">
+                <name>ZZ Top</name>
+                <sort-name>ZZ Top</sort-name>
+                <alias-list>
+                    <alias sort-name="ZZTop">ZZTop</alias>
+                    <alias sort-name="Z Z Top">Z Z Top</alias>
+                </alias-list>
+            </artist>
+        </name-credit>
+    </artist-credit>
+    <release-group id="035e7ea1-96ac-3c21-bee5-3f0a4471298a" type="Compilation">
+        <primary-type>Album</primary-type>
+        <secondary-type-list>
+            <secondary-type>Compilation</secondary-type>
+        </secondary-type-list>
+    </release-group>
+    <date>1992-04-20</date>
+    <country>AU</country>
+    <release-event-list>
+        <release-event>
+            <date>1992-04-20</date>
+            <area id="106e0bec-b638-3b37-b731-f53d507dc00e">
+                <name>Australia</name>
+                <sort-name>Australia</sort-name>
+                <iso-3166-1-code-list>
+                    <iso-3166-1-code>AU</iso-3166-1-code>
+                </iso-3166-1-code-list>
+            </area>
+        </release-event>
+    </release-event-list>
+    <label-info-list>
+        <label-info>
+            <catalog-number>7599-26846-2</catalog-number>
+            <label id="d50eb1c1-20bd-46b2-a216-a26aac9b7130">
+                <name>Warner Music Australia</name>
+            </label>
+        </label-info>
+    </label-info-list>
+    <medium-list count="1">
+        <track-count>18</track-count>
+        <medium>
+            <format>CD</format>
+            <disc-list count="10"/>
+            <track-list count="18"/>
+        </medium>
+    </medium-list>
+</release>
+
+	Accept (ZZ Top: Greatest Hits [AU])? [Yn]
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<release xmlns="http://musicbrainz.org/ns/mmd-2.0#"
+    xmlns:ext="http://musicbrainz.org/ns/ext#-2.0" ext:score="100" id="7b38394d-d5bf-32f5-8aa8-12c16c9dc4ff">
+    <title>Greatest Hits</title>
+    <status>Official</status>
+    <packaging>Jewel Case</packaging>
+    <text-representation>
+        <language>eng</language>
+        <script>Latn</script>
+    </text-representation>
+    <artist-credit>
+        <name-credit>
+            <artist id="a81259a0-a2f5-464b-866e-71220f2739f1">
+                <name>ZZ Top</name>
+                <sort-name>ZZ Top</sort-name>
+                <alias-list>
+                    <alias sort-name="ZZTop">ZZTop</alias>
+                    <alias sort-name="Z Z Top">Z Z Top</alias>
+                </alias-list>
+            </artist>
+        </name-credit>
+    </artist-credit>
+    <release-group id="035e7ea1-96ac-3c21-bee5-3f0a4471298a" type="Compilation">
+        <primary-type>Album</primary-type>
+        <secondary-type-list>
+            <secondary-type>Compilation</secondary-type>
+        </secondary-type-list>
+    </release-group>
+    <date>1992-04</date>
+    <country>XE</country>
+    <release-event-list>
+        <release-event>
+            <date>1992-04</date>
+            <area id="89a675c2-3e37-3518-b83c-418bad59a85a">
+                <name>Europe</name>
+                <sort-name>Europe</sort-name>
+                <iso-3166-1-code-list>
+                    <iso-3166-1-code>XE</iso-3166-1-code>
+                </iso-3166-1-code-list>
+            </area>
+        </release-event>
+    </release-event-list>
+    <barcode>075992684620</barcode>
+    <asin>B000002LSV</asin>
+    <label-info-list>
+        <label-info>
+            <catalog-number>7599-26846-2</catalog-number>
+            <label id="944d69df-5ab2-4dea-b150-00a20d02a8f6">
+                <name>Warner Music Europe</name>
+            </label>
+        </label-info>
+    </label-info-list>
+    <medium-list count="1">
+        <track-count>18</track-count>
+        <medium>
+            <format>CD</format>
+            <disc-list count="10"/>
+            <track-list count="18"/>
+        </medium>
+    </medium-list>
+</release>
+
+	Accept (ZZ Top: Greatest Hits [XE])? [Yn]
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<release xmlns="http://musicbrainz.org/ns/mmd-2.0#"
+    xmlns:ext="http://musicbrainz.org/ns/ext#-2.0" ext:score="100" id="58b9ab7d-2660-499f-afe7-0cb6b6c5f3f4">
+    <title>Greatest Hits</title>
+    <status>Official</status>
+    <text-representation>
+        <language>eng</language>
+        <script>Latn</script>
+    </text-representation>
+    <artist-credit>
+        <name-credit>
+            <artist id="a81259a0-a2f5-464b-866e-71220f2739f1">
+                <name>ZZ Top</name>
+                <sort-name>ZZ Top</sort-name>
+                <alias-list>
+                    <alias sort-name="ZZTop">ZZTop</alias>
+                    <alias sort-name="Z Z Top">Z Z Top</alias>
+                </alias-list>
+            </artist>
+        </name-credit>
+    </artist-credit>
+    <release-group id="035e7ea1-96ac-3c21-bee5-3f0a4471298a" type="Compilation">
+        <primary-type>Album</primary-type>
+        <secondary-type-list>
+            <secondary-type>Compilation</secondary-type>
+        </secondary-type-list>
+    </release-group>
+    <date>1992-04-14</date>
+    <country>US</country>
+    <release-event-list>
+        <release-event>
+            <date>1992-04-14</date>
+            <area id="489ce91b-6658-3307-9877-795b68554c98">
+                <name>United States</name>
+                <sort-name>United States</sort-name>
+                <iso-3166-1-code-list>
+                    <iso-3166-1-code>US</iso-3166-1-code>
+                </iso-3166-1-code-list>
+            </area>
+        </release-event>
+    </release-event-list>
+    <barcode>075992684620</barcode>
+    <asin>B000002LSV</asin>
+    <label-info-list>
+        <label-info>
+            <catalog-number>9 26846-2</catalog-number>
+            <label id="c595c289-47ce-4fba-b999-b87503e8cb71">
+                <name>Warner Bros. Records</name>
+            </label>
+        </label-info>
+    </label-info-list>
+    <medium-list count="1">
+        <track-count>18</track-count>
+        <medium>
+            <format>CD</format>
+            <disc-list count="11"/>
+            <track-list count="18"/>
+        </medium>
+    </medium-list>
+</release>
+
+	Accept (ZZ Top: Greatest Hits [US])? [Yn]
+
+U '/home/jdp/Music/ZZ Top/Greatest Hits/01._Gimme All Your Lovin'.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/02._Sharp Dressed Man.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/03._Rough Boy.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/04._Tush.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/05._My Head's in Mississippi.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/06._Pearl Necklace.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/07._I'm Bad, I'm Nationwide.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/08._Viva Las Vegas.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/09._Doubleback.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/10._Gun Love.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/11._Got Me Under Pressure.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/12._Give It Up.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/13._Cheap Sunglasses.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/14._Sleeping Bag.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/15._Planet of Women.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/16._La Grange.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/17._Tube Snake Boogie.mp3'
+U '/home/jdp/Music/ZZ Top/Greatest Hits/18._Legs (dance enhanced version).mp3'

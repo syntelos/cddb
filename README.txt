@@ -10,6 +10,10 @@ Use
 
   Compile using 'mk.sh' and run using 'java-jar cddb.jar <dir>', where <dir> is something like "~/Music/ZZ Top/Greatest Hits/".  This renames "Track #.wav" files to "##. <track name>.wav" and adds ID3 tags.  Useful on linux.  A tagging program might be more fun.
 
+Experience
+
+  From linux WAV files, convert to MP3 and tag with ID3 for Rhythmbox.
+
 Author
 
   John Pritchard

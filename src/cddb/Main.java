@@ -37,9 +37,9 @@ import org.jaudiotagger.tag.TagException;
  * 
  */
 public class Main {
-    private final static String FilenameFormat_In = "Track %d.wav";
-    private final static String FilenameFormat = "%02d._%s.wav";
-    private final static String FilenameFormat_Old = "%d %s.wav";
+    private final static String FilenameFormat_In = "Track %d.%s";
+    private final static String FilenameFormat = "%02d._%s.%s";
+    private final static String FilenameFormat_Old = "%d %s.%s";
 
     private final static PrintStream out = System.out;
     private final static PrintStream err = System.err;
@@ -87,6 +87,8 @@ public class Main {
 
 	    File dir = null;
 
+	    String fext = "mp3";
+
 	    boolean print = false, tag = false;
 
 	    /*
@@ -99,6 +101,16 @@ public class Main {
 		    }
 		    else if (arg.equals("--tag")){
 			tag = (!tag);
+		    }
+		    else if (arg.equals("--fext")){
+			argx += 1;
+			if (argx < argc){
+			    arg = argv[argx];
+			    fext = arg;
+			}
+			else {
+			    usage();
+			}
 		    }
 		    else {
 			usage();
@@ -134,14 +146,16 @@ public class Main {
 	    }
 	    else if (dir.isDirectory()){
 
-		final int dir_count = dir.listFiles().length;
+		fext = Fext(dir,fext);
 
-		final String[] info = ArtistAlbum(dir);
+		final int dir_count = Count(dir,fext);
 
-		if (null != info){
+		final String[] aa = ArtistAlbum(dir); //gaga+1//
 
-		    final String artist = info[0];
-		    final String album = info[1];
+		if (null != aa){
+
+		    final String artist = aa[0];
+		    final String album = aa[1];
 
 		    final API api_release = new API(Entity.RELEASE);
 
@@ -174,7 +188,7 @@ public class Main {
 
 			    if (0 < release_list_count){
 
-				Update(dir,artist,album,api_release,response,release_list_count,release_list);
+				Update(dir,fext,artist,album,api_release,response,release_list_count,release_list);
 			    }
 			    else {
 				err.printf("Error, 'release-list' count %d.%n",release_list.getLength());
@@ -190,15 +204,17 @@ public class Main {
 			System.exit(0);
 		    }
 		    catch (Exception any){
-			any.printStackTrace();
+
 			if (null != response){
 
-			    err.printf("Request: %s%n",response.getUserData(API.DOM_HTTP_REQUEST));
-			    err.printf("Response: %s%n",response.getUserData(API.DOM_HTTP_STATUS));
 			    err.println();
 			    api_release.prettyPrint(response,err);
 			    err.println();
+			    err.printf("Request: %s%n",response.getUserData(API.DOM_HTTP_REQUEST));
+			    err.printf("Response: %s%n",response.getUserData(API.DOM_HTTP_STATUS));
+			    err.println();
 			}
+			any.printStackTrace();
 			System.exit(1);
 		    }
 		}
@@ -221,60 +237,54 @@ public class Main {
 	AudioFile f = AudioFileIO.read(file);
 	Tag tag = f.getTag();
 
-	if (tag.hasField(FieldKey.ARTIST) && tag.hasField(FieldKey.ALBUM) && tag.hasField(FieldKey.TRACK) && tag.hasField(FieldKey.TITLE)){
+	String artist = null, album = null, track = null, title = null;
 
-	    return false;
+	for (String string : tag.getAll(FieldKey.ARTIST)){
+	    if (null != string){
+
+		artist = string;
+		break;
+	    }
+	}
+	for (String string : tag.getAll(FieldKey.ALBUM)){
+
+	    if (null != string){
+		album = string;
+		break;
+	    }
+	}
+	for (String string : tag.getAll(FieldKey.TRACK)){
+
+	    if (null != string){
+		track = string;
+		break;
+	    }
+	}
+	for (String string : tag.getAll(FieldKey.TITLE)){
+
+	    if (null != string){
+		title = string;
+		break;
+	    }
+	}
+
+	if (null != track && null != artist && null != album && null != title){
+
+	    out.printf("%s : %s : %s : %s : %s%n",file.toPath(),track,artist,album,title);
+
+	    return true;
 	}
 	else {
-	    String artist = null, album = null, track = null, title = null;
+	    out.println("Tag data not found.");
 
-	    for (String string : tag.getAll(FieldKey.ARTIST)){
-		if (null != string){
-
-		    artist = string;
-		    break;
-		}
-	    }
-	    for (String string : tag.getAll(FieldKey.ALBUM)){
-
-		if (null != string){
-		    album = string;
-		    break;
-		}
-	    }
-	    for (String string : tag.getAll(FieldKey.TRACK)){
-
-		if (null != string){
-		    track = string;
-		    break;
-		}
-	    }
-	    for (String string : tag.getAll(FieldKey.TITLE)){
-
-		if (null != string){
-		    title = string;
-		    break;
-		}
-	    }
-
-	    if (null != track && null != artist && null != album && null != title){
-
-		out.printf("%s \"%s\" \"%s\" \"%s\"%n",track,artist,album,title);
-
-		return true;
-	    }
-	    else {
-		out.println("Tag data not found.");
-
-		return false;
-	    }
+	    return false;
 	}
     }
     private final static void UpdateTag(File file, String artist, String album, int pos, int num, String title)
 	throws CannotReadException, TagException, ReadOnlyFileException, InvalidAudioFrameException, IOException, FieldDataInvalidException, CannotWriteException
     {
 	AudioFile f = AudioFileIO.read(file);
-	Tag tag = f.getTag();
+	Tag tag = f.getTagOrCreateAndSetDefault();
 
 	tag.setField(FieldKey.ARTIST,artist);
 	tag.setField(FieldKey.ALBUM,album);
@@ -316,7 +326,8 @@ public class Main {
 	    return false;
 	}
     }
-    private final static void Update(File dir, String artist, String album,
+    private final static void Update(File dir, String fext, 
+				     String artist, String album,
 				     API api_release, Document response, 
 				     int release_list_count, NodeList release_list)
 	throws CannotReadException, TagException, ReadOnlyFileException, InvalidAudioFrameException, IOException, FieldDataInvalidException, CannotWriteException
@@ -352,12 +363,12 @@ public class Main {
 
 			/*
 			 */
-			File source_file = new File(dir,String.format(FilenameFormat_In,position));
+			File source_file = new File(dir,String.format(FilenameFormat_In,position,fext));
 			if (source_file.isFile()){
 
 			    Path source = source_file.toPath();
 
-			    File target_file = new File(dir,String.format(FilenameFormat,number,title));
+			    File target_file = new File(dir,String.format(FilenameFormat,number,title.replace('/','-'),fext));
 
 			    Path target = target_file.toPath();
 
@@ -368,12 +379,12 @@ public class Main {
 			    UpdateTag(target_file,artist,album,position,number,title);
 			}
 			else {
-			    source_file = new File(dir,String.format(FilenameFormat_Old,number,title));
+			    source_file = new File(dir,String.format(FilenameFormat_Old,number,title.replace('/','-'),fext));
 			    if (source_file.isFile()){
 
 				Path source = source_file.toPath();
 
-				File target_file = new File(dir,String.format(FilenameFormat,number,title));
+				File target_file = new File(dir,String.format(FilenameFormat,number,title.replace('/','-'),fext));
 
 				Path target = target_file.toPath();
 
@@ -384,7 +395,7 @@ public class Main {
 				UpdateTag(target_file,artist,album,position,number,title);
 			    }
 			    else {
-				source_file = new File(dir,String.format(FilenameFormat,number,title));
+				source_file = new File(dir,String.format(FilenameFormat,number,title.replace('/','-'),fext));
 
 				if (source_file.isFile()){
 
@@ -405,5 +416,47 @@ public class Main {
 		break _release_loop;
 	    }
 	}
+    }
+    private final static String Fext(File dir, String fext){
+	boolean fext_valid = false;
+	String fext_replace = null;
+	/*
+	 * Validate or replace the argument
+	 */
+	for (File file : dir.listFiles()){
+
+	    String file_ext = Fext(file.getName());
+
+	    if (fext.equals(file_ext)){
+
+		fext_valid = true;
+	    }
+	    else if (null == fext_replace){
+
+		fext_replace = file_ext;
+	    }
+	}
+
+	if (fext_valid)
+	    return fext;
+	else
+	    return fext_replace;
+    }
+    private final static String Fext(String name){
+	int lidx = name.lastIndexOf('.');
+	if (0 < lidx)
+	    return name.substring(lidx+1);
+	else
+	    throw new IllegalArgumentException(name);
+    }
+    private final static int Count(File dir, String fext){
+	int count = 0;
+	for (File file : dir.listFiles()){
+	    String check = Fext(file.getName());
+	    if (check.equals(fext)){
+		count += 1;
+	    }
+	}
+	return count;
     }
 }
