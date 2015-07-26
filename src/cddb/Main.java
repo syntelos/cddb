@@ -92,12 +92,12 @@ public class Main {
 	    /*
 	     */
 	    for (int argc = argv.length, argx = 0; argx < argc; argx++){
-		String arg = argv[0];
+		String arg = argv[argx];
 		if ('-' == arg.charAt(0)){
-		    if (arg.endsWith("-print")){
+		    if (arg.equals("--print")){
 			print = (!print);
 		    }
-		    else if (arg.endsWith("-tag")){
+		    else if (arg.equals("--tag")){
 			tag = (!tag);
 		    }
 		    else {
@@ -118,7 +118,12 @@ public class Main {
 		try {
 		    for (File file : dir.listFiles()){
 
-			PrintTag(file);
+			if (PrintTag(file)){
+			    continue;
+			}
+			else {
+			    System.exit(1);
+			}
 		    }
 		    System.exit(0);
 		}
@@ -209,7 +214,7 @@ public class Main {
 	    usage();
 	}
     }
-    private final static void PrintTag(File file)
+    private final static boolean PrintTag(File file)
 	throws CannotReadException, TagException, ReadOnlyFileException, InvalidAudioFrameException, IOException, FieldDataInvalidException, CannotWriteException
     {
 	AudioFile f = AudioFileIO.read(file);
@@ -217,15 +222,51 @@ public class Main {
 
 	if (tag.hasField(FieldKey.ARTIST) && tag.hasField(FieldKey.ALBUM) && tag.hasField(FieldKey.TRACK) && tag.hasField(FieldKey.TITLE)){
 
-	    return;
+	    return false;
 	}
 	else {
-	    String artist = tag.getAll(FieldKey.ARTIST).get(0);
-	    String album = tag.getAll(FieldKey.ALBUM).get(0);
-	    String track = tag.getAll(FieldKey.TRACK).get(0);
-	    String title = tag.getAll(FieldKey.TITLE).get(0);
+	    String artist = null, album = null, track = null, title = null;
 
-	    out.printf("%s \"%s\" \"%s\" \"%s\"%n",track,artist,album,title);
+	    for (String string : tag.getAll(FieldKey.ARTIST)){
+		if (null != string){
+
+		    artist = string;
+		    break;
+		}
+	    }
+	    for (String string : tag.getAll(FieldKey.ALBUM)){
+
+		if (null != string){
+		    album = string;
+		    break;
+		}
+	    }
+	    for (String string : tag.getAll(FieldKey.TRACK)){
+
+		if (null != string){
+		    track = string;
+		    break;
+		}
+	    }
+	    for (String string : tag.getAll(FieldKey.TITLE)){
+
+		if (null != string){
+		    title = string;
+		    break;
+		}
+	    }
+
+	    if (null != track && null != artist && null != album && null != title){
+
+		out.printf("%s \"%s\" \"%s\" \"%s\"%n",track,artist,album,title);
+
+		return true;
+	    }
+	    else {
+		out.println("Tag data not found.");
+
+		return false;
+	    }
 	}
     }
     private final static void UpdateTag(File file, String artist, String album, int pos, int num, String title)
